@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2012 Daniel Rodr√≠guez <seth.illgard@gmail.com>
+  Copyright (C) 2012 Daniel Rodriguez <seth.illgard@gmail.com>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -126,7 +126,7 @@ class PropertyList extends PropertyContainer implements List<dynamic> {
     }
   }
 
-  String toString() {
+  dynamic toString() {
     return 'PropertyMap:${_objectData.toString()}';
   }
 }

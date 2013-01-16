@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2012 Daniel Rodr√≠guez <seth.illgard@gmail.com>
+  Copyright (C) 2012 Daniel Rodriguez <seth.illgard@gmail.com>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -21,6 +21,6 @@
 part of property_map;
 
 abstract class Serializable {
-  String toJson();
+  dynamic toJson();
   void fromJson(dynamic json);
 }

@@ -1,1 +1,7 @@
 name: property_map
+version: 0.0.1
+description: >
+  PropertyMap and PropertyList are wrappers around the native Map and List
+  classes and allow you to quickly implement property bags.
+author: Daniel Rodriguez
+homepage: https://github.com/sethillgard/property_map

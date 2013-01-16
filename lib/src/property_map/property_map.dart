@@ -133,7 +133,7 @@ class PropertyMap extends PropertyContainer implements Map<String, dynamic> {
     }
   }
 
-  String toString() {
+  dynamic toString() {
     return 'PropertyMap:${_objectData.toString()}';
   }
 }
