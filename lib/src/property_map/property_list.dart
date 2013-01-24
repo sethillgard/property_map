@@ -46,14 +46,10 @@ class PropertyList extends PropertyContainer implements List<dynamic> {
   int get length => _objectData.length;
   bool get isEmpty => _objectData.isEmpty;
   clear() => _objectData.clear();
-  Collection map(f(element)) => _objectData.map(f);
-  Collection filter(bool f(element)) => _objectData.filter(f);
   bool every(bool f(element)) => _objectData.every(f);
-  bool some(bool f(element)) => _objectData.some(f);
   reduce(initialValue, combine(prevValue, element)) =>
       _objectData.reduce(initialValue, combine);
   bool contains(dynamic element) => _objectData.contains(element);
-  Iterator iterator() => _objectData.iterator();
   void set length(int value) { _objectData.length = value; }
   dynamic get first => _objectData.first;
   dynamic get last => _objectData.last;
@@ -84,6 +80,34 @@ class PropertyList extends PropertyContainer implements List<dynamic> {
   operator []=(int index, dynamic value) {
     _objectData[index] = _validate(value);
   }
+  void remove(Object element) => _objectData.remove(element);
+  void removeAll(Iterable<dynamic> elements) => _objectData.removeAll(elements);
+  void retainAll(Iterable<dynamic> elements) => _objectData.retainAll(elements);
+  void removeMatching(bool test(dynamic)) => _objectData.removeMatching(test);
+  void retainMatching(bool test(dynamic)) => _objectData.retainMatching(test);
+  Iterator<dynamic> get iterator => _objectData.iterator;
+  dynamic get single => _objectData.single;
+  Iterable<dynamic> mappedBy(dynamic f(dynamic)) => _objectData.mappedBy(f);
+  Iterable<dynamic> where(bool f(dynamic)) => _objectData.where(f);
+  String join([String separator]) => _objectData.join(separator);
+  bool any(bool f(dynamic)) => _objectData.any(f);
+  List<dynamic> toList() => _objectData.toList();
+  Set<dynamic> toSet() => _objectData.toSet();
+  dynamic min([int compare(dynamic a, dynamic b)]) => _objectData.min(compare);
+  dynamic max([int compare(dynamic a, dynamic b)]) => _objectData.max(compare);
+  Iterable<dynamic> take(int n) => _objectData.take(n);
+  Iterable<dynamic> takeWhile(bool test(dynamic)) =>
+      _objectData.takeWhile(test);
+  Iterable<dynamic> skip(int n) => _objectData.skip(n);
+  Iterable<dynamic> skipWhile(bool test(dynamic)) =>
+      _objectData.skipWhile(test);
+  dynamic firstMatching(bool test(dynamic), {dynamic orElse()}) =>
+      _objectData.firstMatching(test, orElse:orElse);
+  dynamic lastMatching(bool test(dynamic), {dynamic orElse()}) =>
+      _objectData.lastMatching(test, orElse:orElse);
+  dynamic singleMatching(bool test(dynamic)) =>
+      _objectData.singleMatching(test);
+  dynamic elementAt(int index) => _objectData.elementAt(index);
 
   /**
    * Serialize.
@@ -127,6 +151,6 @@ class PropertyList extends PropertyContainer implements List<dynamic> {
   }
 
   dynamic toString() {
-    return 'PropertyMap:${_objectData.toString()}';
+    return 'PropertyList:${_objectData.toString()}';
   }
 }

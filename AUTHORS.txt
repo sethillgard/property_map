@@ -1,3 +1,3 @@
 Authors:
 
-Daniel Rodríguez <seth.illgard@gmail.com>
+Daniel Rodriguez <seth.illgard@gmail.com>

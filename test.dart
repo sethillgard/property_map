@@ -1,39 +1,11 @@
-property_map
-============
 
-## Introduction ##
+import 'lib/property_map.dart';
 
-PropertyMap allows you to quickly implement property bags in dart. It consists
-of 2 classes and one inter
+class Test {
 
-## Features ##
+}
 
-* Rapid implementation of property bags.
-* Only accepts simple types (as defined in dar:json) and Serializable objects.
-
-
-## Getting Started ##
-
-1\. Add the following to your project's **pubspec.yaml** and run ```pub install```.
-
-```yaml
-dependencies:
-  property_map:
-    git: https://github.com/sethillgard/property_map.git
-```
-
-2\. Add the correct import for your project. 
-
-```dart
-import 'package:property_map/property_map.dart';
-```
-
-## Example ##
-
-1\. Initialize an AssetManager:
-
-```dart
-main() {
+void main() {
   // Create a PropertyMap
   var data = new PropertyMap();
 
@@ -63,4 +35,3 @@ main() {
   // Serialize them all.
   print(data.toJson());
 }
-```

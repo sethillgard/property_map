@@ -73,18 +73,19 @@ class PropertyMap extends PropertyContainer implements Map<String, dynamic> {
    */
   noSuchMethod(InvocationMirror mirror) {
     if (mirror.isGetter) {
-      var property = mirror.memberName.replaceFirst("get:", "");
+      var property = mirror.memberName;
       if (this.containsKey(property)) {
         return this[property];
       }
     } else if (mirror.isSetter) {
-      var property = mirror.memberName.replaceFirst("set:", "");
+      // Remove a nasty '=' that is always added at the end for some reason.
+      var property = mirror.memberName.slice(0, -1);
       this[property] = mirror.positionalArguments[0];
       return this[property];
     }
 
-    //if we get here, then we've not found it - throw.
-    print("Not found: ${mirror.memberName}");
+    // The property does not exist.
+    print("Not found: ${mirror.memberName} in $this");
     print("IsGetter: ${mirror.isGetter}");
     print("IsSetter: ${mirror.isSetter}");
     print("isAccessor: ${mirror.isAccessor}");
