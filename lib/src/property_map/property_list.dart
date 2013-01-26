@@ -29,12 +29,14 @@ class PropertyList extends PropertyContainer implements List<dynamic> {
   List _objectData;
 
   /// Default constructor.
-  PropertyList() {
+  PropertyList([bool allowAnyObject = false]) {
     _objectData = new List();
+    _allowAnyObject = allowAnyObject;
   }
 
   /// Contructor from Iterable.
-  PropertyList.from(Iterable other) {
+  PropertyList.from(Iterable other, [bool allowAnyObject = false]) {
+    _allowAnyObject = allowAnyObject;
     _objectData = new List.from(other);
     for (var i = 0; i < _objectData.length; i++) {
       _objectData[i] = _validate(_objectData[i]);

@@ -29,12 +29,14 @@ class PropertyMap extends PropertyContainer implements Map<String, dynamic> {
   Map<String, dynamic> _objectData;
 
   /// Default constructor.
-  PropertyMap() {
-    _objectData = new Map<String, dynamic>();
+  PropertyMap([bool allowAnyObject = false]) {
+    _objectData = new Map();
+    _allowAnyObject = allowAnyObject;
   }
 
   /// Contructor from Map.
-  PropertyMap.from(Map<String, dynamic> other) {
+  PropertyMap.from(Map<String, dynamic> other, [bool allowAnyObject = false]) {
+    _allowAnyObject = allowAnyObject;
     _objectData = new Map.from(other);
     for (var key in _objectData.keys) {
       assert(key is String);
@@ -115,7 +117,8 @@ class PropertyMap extends PropertyContainer implements Map<String, dynamic> {
       else {
         var mirror = reflect(value);
         throw 'Unexpected value found on a PropertyMap. Type found: '
-        '${mirror.type.simpleName}.';
+        '${mirror.type.simpleName}. Serialization won\'t work if '
+        '_allowAnyObject is set to true.';
       }
     }
     buffer.add('}');

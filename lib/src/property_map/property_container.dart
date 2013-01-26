@@ -22,14 +22,17 @@ part of property_map;
 
 abstract class PropertyContainer implements Serializable {
 
+  bool _allowAnyObject = false;
+
   /**
    * Returns the passed value if it is a an acceptable entry for a
    * PropertyContainer. If the value is a Map or a List, it will be converted
    * into a PropertyMap or a PropertyList (recursively). If the value is
    * not a Map, List, String, bool, num, null, or an instance implementing
-   * Serializable, it throws an exception.
+   * Serializable, and allowUnserializables is set to false, it throws an
+   * exception.
    */
-  static dynamic validate(dynamic value) {
+  static dynamic validate(dynamic value, bool allowAnyObject) {
     if (value is num ||
         value is bool ||
         value is String ||
@@ -38,17 +41,23 @@ abstract class PropertyContainer implements Serializable {
       return value;
     }
     else if (value is List) {
-      return new PropertyList.from(value);
+      return new PropertyList.from(value, allowAnyObject);
     }
     else if (value is Map) {
-      return new PropertyMap.from(value);
+      return new PropertyMap.from(value, allowAnyObject);
+    }
+
+    // If this is set to true, just let it go. Users know what they are doing.
+    if (allowAnyObject) {
+      return value;
     }
 
     var mirror = reflect(value);
     throw 'Value not supported on a PropertyContainer. Trying to save an '
     'instance of ${mirror.type.simpleName}. Only numbers, booleans, Strings, '
-    'classes that implement Serializable and Lists and Maps of those '
-    'types are allowed as entries on a PropertyContainer.';
+    'Lists(recursive), Maps(recursive) and types that implement Serializable '
+    'are allowed as entries on a PropertyContainer, unless _allowAnyObject '
+    'is set to true.';
     return null;
   }
 
@@ -56,5 +65,5 @@ abstract class PropertyContainer implements Serializable {
    * Internal non static version of validate(). Needed because classes that
    * extend this class may implement noSuchMethod.
    */
-  dynamic _validate(dynamic value) => validate(value);
+  dynamic _validate(dynamic value) => validate(value, this._allowAnyObject);
 }
