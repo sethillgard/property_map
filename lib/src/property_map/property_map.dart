@@ -22,19 +22,32 @@ part of property_map;
 
 /**
  * Wrapper around a Map<String, dynamic>.
+ *
+ * Only numbers, booleans, Strings, Lists(recursive), Maps(recursive) and types
+ * that implement Serializable are allowed as entries on a PropertyContainer,
+ * unless _allowAnyObject is set to true, in which case, serialization is
+ * disabled.
  */
 class PropertyMap extends PropertyContainer implements Map<String, dynamic> {
 
   // The actual map that holds the elements.
   Map<String, dynamic> _objectData;
 
-  /// Default constructor.
+  /**
+   *  Default constructor.
+   *  Set [allowAnyObject] to true to allow arbitrary objects to be added to
+   *  this container. If this is set to true, serialization won't work.
+   */
   PropertyMap([bool allowAnyObject = false]) {
     _objectData = new Map();
     _allowAnyObject = allowAnyObject;
   }
 
-  /// Contructor from Map.
+  /**
+   * Contructs a PropertyMap from another Map, creating a copy of it.
+   * Set [allowAnyObject] to true to allow arbitrary objects to be added to
+   * this container. If this is set to true, serialization won't work.
+   */
   PropertyMap.from(Map<String, dynamic> other, [bool allowAnyObject = false]) {
     _allowAnyObject = allowAnyObject;
     _objectData = new Map.from(other);
@@ -98,6 +111,12 @@ class PropertyMap extends PropertyContainer implements Map<String, dynamic> {
    * Serialize.
    */
   String toJson() {
+    if (_allowAnyObject) {
+      throw 'Calling toString() on a PropertyMap that allows arbitrary '
+      'objects is not supported because we cannot gurantee that they will be '
+      'Serializable.';
+    }
+
     var buffer = new StringBuffer();
     buffer.add('{');
     var first = true;
@@ -117,8 +136,7 @@ class PropertyMap extends PropertyContainer implements Map<String, dynamic> {
       else {
         var mirror = reflect(value);
         throw 'Unexpected value found on a PropertyMap. Type found: '
-        '${mirror.type.simpleName}. Serialization won\'t work if '
-        '_allowAnyObject is set to true.';
+        '${mirror.type.simpleName}.';
       }
     }
     buffer.add('}');

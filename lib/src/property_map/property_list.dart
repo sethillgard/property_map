@@ -21,20 +21,33 @@
 part of property_map;
 
 /**
- * Wrapper around List<dynamic>
+ * Wrapper around List<dynamic>.
+ *
+ * Only numbers, booleans, Strings, Lists(recursive), Maps(recursive) and types
+ * that implement Serializable are allowed as entries on a PropertyContainer,
+ * unless _allowAnyObject is set to true, in which case, serialization is
+ * disabled.
  */
 class PropertyList extends PropertyContainer implements List<dynamic> {
 
   // The actual list that holds the elements.
   List _objectData;
 
-  /// Default constructor.
+  /**
+   *  Default constructor.
+   *  Set [allowAnyObject] to true to allow arbitrary objects to be added to
+   *  this container. If this is set to true, serialization won't work.
+   */
   PropertyList([bool allowAnyObject = false]) {
     _objectData = new List();
     _allowAnyObject = allowAnyObject;
   }
 
-  /// Contructor from Iterable.
+  /**
+   * Contructs a PropertyList from any Iterable, creating a copy of it.
+   * Set [allowAnyObject] to true to allow arbitrary objects to be added to
+   * this container. If this is set to true, serialization won't work.
+   */
   PropertyList.from(Iterable other, [bool allowAnyObject = false]) {
     _allowAnyObject = allowAnyObject;
     _objectData = new List.from(other);
@@ -115,6 +128,12 @@ class PropertyList extends PropertyContainer implements List<dynamic> {
    * Serialize.
    */
   String toJson() {
+    if (_allowAnyObject) {
+      throw 'Calling toString() on a PropertyList that allows arbitrary '
+      'objects is not supported because we cannot gurantee that they will be '
+      'Serializable.';
+    }
+
     var buffer = new StringBuffer();
     buffer.add('[');
     for (var i = 0; i < _objectData.length ; i++) {
