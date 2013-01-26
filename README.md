@@ -9,16 +9,15 @@ of 2 main classes: PropertyMap and PropertyList.
 PropertyMap is a wrapper around Map<String, dynamic>.
 PropertyList is a wrapper around List<dynamic>.
 
-The benefit of using them is that they can, if desired, restrict the data that
-is added to them, they can only take simple objects and Serializable objects.
-This way, we can ensure that everything inside a PropertyMap (or PropertyList)
-is indeed, serializable.
+By default, they can only take simple objects (as defined in dart:json) and
+Serializable objects. This way, we can ensure that everything inside a
+PropertyMap (or PropertyList) is serializable.
 
 ## Features ##
 
 * Rapid implementation of property bags.
 * Can restrict contents to simple types (as defined in dart:json) and
-    Serializable objects.
+    Serializable objects. This is the default.
 
 ## Getting Started ##
 
