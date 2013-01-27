@@ -25,8 +25,8 @@ part of property_map;
  *
  * Only numbers, booleans, Strings, Lists(recursive), Maps(recursive) and types
  * that implement Serializable are allowed as entries on a PropertyContainer,
- * unless _allowAnyObject is set to true, in which case, serialization is
- * disabled.
+ * unless _allowNonSerializables is set to true ont he configuration object,
+ * in which case, serialization is disabled.
  */
 class PropertyMap extends PropertyContainer implements Map<String, dynamic> {
 
@@ -35,21 +35,24 @@ class PropertyMap extends PropertyContainer implements Map<String, dynamic> {
 
   /**
    *  Default constructor.
-   *  Set [allowAnyObject] to true to allow arbitrary objects to be added to
-   *  this container. If this is set to true, serialization won't work.
    */
-  PropertyMap([bool allowAnyObject = false]) {
+  PropertyMap([PropertyContainerConfig configuration = null]) {
+    if (configuration == null) {
+      configuration = PropertyContainerConfig.defaultValue;
+    }
+    _configuration = configuration;
     _objectData = new Map();
-    _allowAnyObject = allowAnyObject;
   }
 
   /**
    * Contructs a PropertyMap from another Map, creating a copy of it.
-   * Set [allowAnyObject] to true to allow arbitrary objects to be added to
-   * this container. If this is set to true, serialization won't work.
    */
-  PropertyMap.from(Map<String, dynamic> other, [bool allowAnyObject = false]) {
-    _allowAnyObject = allowAnyObject;
+  PropertyMap.from(Map<String, dynamic> other,
+                   [PropertyContainerConfig configuration = null]) {
+    if (configuration == null) {
+      configuration = PropertyContainerConfig.defaultValue;
+    }
+    _configuration = configuration;
     _objectData = new Map.from(other);
     for (var key in _objectData.keys) {
       assert(key is String);
@@ -75,6 +78,18 @@ class PropertyMap extends PropertyContainer implements Map<String, dynamic> {
   operator [](String key) => _objectData[key];
   operator []=(String key, dynamic value) {
     _objectData[key] = _validate(value);
+  }
+
+  /**
+   * Adds an element at to this PropertyMap.
+   *
+   * Use this to override the configuration object. Bear in mind that calling
+   * this method will change the configuration to indicate that we can longer
+   * guarantee serialization.
+   */
+  void addRawElement(String key, dynamic value) {
+    _hasRawElements = true;
+    _objectData[key] = value;
   }
 
   /**
@@ -111,10 +126,11 @@ class PropertyMap extends PropertyContainer implements Map<String, dynamic> {
    * Serialize.
    */
   String toJson() {
-    if (_allowAnyObject) {
+    if (_hasRawElements || !_configuration.canGuaranteeSerialization()) {
       throw 'Calling toString() on a PropertyMap that allows arbitrary '
       'objects is not supported because we cannot gurantee that they will be '
-      'Serializable.';
+      'Serializable. If you want Serialization enabled, make sure you are '
+      'using the default configuration and not calling addRawElement()';
     }
 
     var buffer = new StringBuffer();

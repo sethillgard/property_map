@@ -20,19 +20,29 @@
 
 part of property_map;
 
+/**
+ * Base class for PropertyList and PropertyMap.
+ * Implements common functionality.
+ */
 abstract class PropertyContainer implements Serializable {
 
-  bool _allowAnyObject = false;
+  // Configuration data object.
+  PropertyContainerConfig _configuration = null;
+
+  // Internally used to mark that raw elements where added to the collection,
+  // so we can no longer guarantee serialization.
+  bool _hasRawElements = false;
 
   /**
    * Returns the passed value if it is a an acceptable entry for a
    * PropertyContainer. If the value is a Map or a List, it will be converted
-   * into a PropertyMap or a PropertyList (recursively). If the value is
-   * not a Map, List, String, bool, num, null, or an instance implementing
-   * Serializable, and allowUnserializables is set to false, it throws an
-   * exception.
+   * into a PropertyMap or a PropertyList (recursively), unless specified
+   * otherwise onto the config object. If the value is not a Map, List, String,
+   * bool, num, null, or an instance implementing Serializable and the config
+   * does not allow nonSerializable objects, it throws an exception.
    */
-  static dynamic validate(dynamic value, bool allowAnyObject) {
+  static dynamic validate(dynamic value,
+                          PropertyContainerConfig configuration) {
     if (value is num ||
         value is bool ||
         value is String ||
@@ -41,14 +51,24 @@ abstract class PropertyContainer implements Serializable {
       return value;
     }
     else if (value is List) {
-      return new PropertyList.from(value, allowAnyObject);
+      if (configuration.autoConvertLists) {
+        return new PropertyList.from(value, configuration);
+      }
+      else {
+        return value;
+      }
     }
     else if (value is Map) {
-      return new PropertyMap.from(value, allowAnyObject);
+      if (configuration.autoConvertMaps) {
+        return new PropertyMap.from(value, configuration);
+      }
+      else {
+        return value;
+      }
     }
 
     // If this is set to true, just let it go. Users know what they are doing.
-    if (allowAnyObject) {
+    if (configuration.allowNonSerializables) {
       return value;
     }
 
@@ -65,5 +85,34 @@ abstract class PropertyContainer implements Serializable {
    * Internal non static version of validate(). Needed because classes that
    * extend this class may implement noSuchMethod.
    */
-  dynamic _validate(dynamic value) => validate(value, this._allowAnyObject);
+  dynamic _validate(dynamic value) => validate(value, this._configuration);
+}
+
+/**
+ * Configuration data holder.
+ */
+class PropertyContainerConfig {
+
+  // If set to true, any object can be added to this container.
+  bool allowNonSerializables = false;
+
+  // If set to true, List objects will be turned into PropertyLists when added.
+  bool autoConvertLists = true;
+
+  // If set to true, Map objects will be turned into PropertyMaps when added.
+  bool autoConvertMaps = true;
+
+  /**
+   * Returns true if we can guarantee that all of the objects the containers
+   * using this configuration are holding are serializable.
+   *
+   * This is only true with the default configuration.
+   */
+  bool canGuaranteeSerialization() {
+    return !allowNonSerializables && autoConvertLists && autoConvertMaps;
+  }
+
+  // Cached default for everybody to use.
+  static final PropertyContainerConfig defaultValue =
+      new PropertyContainerConfig();
 }

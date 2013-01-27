@@ -9,9 +9,9 @@ of 2 main classes: PropertyMap and PropertyList.
 PropertyMap is a wrapper around Map<String, dynamic>.
 PropertyList is a wrapper around List<dynamic>.
 
-By default, they can only take simple objects (as defined in dart:json) and
-Serializable objects. This way, we can ensure that everything inside a
-PropertyMap (or PropertyList) is serializable.
+By default, they can only take simple objects (as defined in dart:json)
+and Serializable objects. The configuration object passed to the constructor
+allows you to modify this behavior if needed.
 
 ## Features ##
 
@@ -50,23 +50,28 @@ main() {
   data.age = 25;
 
   // [] works too, if you prefer it.
-  data['phone'] = 621-222-1155;
+  data['phone'] = "621-222-1155";
 
-  // Add a List. It will be automatically converted to a PropertyList.
+  // Add a List. It will be automatically converted to a PropertyList 
+  // (recursively).
   data.enemies = ['Lucia', 'John', 'Alex'];
 
   // But exposes the same API.
   data.enemies.add('Susan');
 
-  // Maps are converted to PropertyMaps so you can compose them.
+  // Maps are converted to PropertyMaps (also recursively).
   data.games = {'important': true, 'fun':true, 'numberOwned':9999};
 
   // You can simply keep adding properties to nested maps.
   data.games.favorites = ['Braid', 'Portal'];
+  
+  // Add nested maps and lists. Values get validated and converted automatically.
+  data.test = {'a':{'b':[0,1,2]}};
 
   // Read values.
-  print(data.name);
-  print(data.games.favorites[0]);
+  print(data.name);				    // Daniel
+  print(data.games.favorites[0]);	// Braid
+  print(data.test.a.b[1]);	        // 1
 
   // Serialize them all.
   print(data.toJson());

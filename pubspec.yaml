@@ -1,5 +1,5 @@
 name: property_map
-version: 0.0.12
+version: 0.0.13
 description: >
   PropertyMap allows you to quickly implement property bags in dart. It consists
   of 2 main classes: PropertyMap and PropertyList.
@@ -8,11 +8,12 @@ description: >
   PropertyList is a wrapper around List<dynamic>.
 
   The benefit of using them is that they can restrict the data that
-  is added to them.
+  is added to them so it is possible to guarantee serialization, and they
+  convert children Maps and Lists recursively to propertyMaps and PropertyLists.
 
   By default, they can only take simple objects (as defined in dart:json)
-  and Serializable objects.
-  This way, we can ensure that everything inside a PropertyMap (or PropertyList)
-  is serializable.
+  and Serializable objects. The configuration object passed to the constructor
+  allows you to modify this behavior if needed.
+
 author: Daniel Rodriguez
 homepage: https://github.com/sethillgard/property_map

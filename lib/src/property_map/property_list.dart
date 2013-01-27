@@ -25,8 +25,8 @@ part of property_map;
  *
  * Only numbers, booleans, Strings, Lists(recursive), Maps(recursive) and types
  * that implement Serializable are allowed as entries on a PropertyContainer,
- * unless _allowAnyObject is set to true, in which case, serialization is
- * disabled.
+ * unless _allowNonSerializables is set to true ont he configuration object,
+ * in which case, serialization is disabled.
  */
 class PropertyList extends PropertyContainer implements List<dynamic> {
 
@@ -35,21 +35,24 @@ class PropertyList extends PropertyContainer implements List<dynamic> {
 
   /**
    *  Default constructor.
-   *  Set [allowAnyObject] to true to allow arbitrary objects to be added to
-   *  this container. If this is set to true, serialization won't work.
    */
-  PropertyList([bool allowAnyObject = false]) {
+  PropertyList([PropertyContainerConfig configuration = null]) {
+    if (configuration == null) {
+      configuration = PropertyContainerConfig.defaultValue;
+    }
+    _configuration = configuration;
     _objectData = new List();
-    _allowAnyObject = allowAnyObject;
   }
 
   /**
    * Contructs a PropertyList from any Iterable, creating a copy of it.
-   * Set [allowAnyObject] to true to allow arbitrary objects to be added to
-   * this container. If this is set to true, serialization won't work.
    */
-  PropertyList.from(Iterable other, [bool allowAnyObject = false]) {
-    _allowAnyObject = allowAnyObject;
+  PropertyList.from(Iterable other,
+                    [PropertyContainerConfig configuration = null]) {
+    if (configuration == null) {
+      configuration = PropertyContainerConfig.defaultValue;
+    }
+    _configuration = configuration;
     _objectData = new List.from(other);
     for (var i = 0; i < _objectData.length; i++) {
       _objectData[i] = _validate(_objectData[i]);
@@ -125,13 +128,27 @@ class PropertyList extends PropertyContainer implements List<dynamic> {
   dynamic elementAt(int index) => _objectData.elementAt(index);
 
   /**
+   * Adds an element at the end of the PropertyList. It can be then
+   * repositioned.
+   *
+   * Use this to override the configuration object. Bear in mind that calling
+   * this method will change the configuration to indicate that we can longer
+   * guarantee serialization.
+   */
+  void addRawElement(dynamic value) {
+    _hasRawElements = true;
+    _objectData.add(value);
+  }
+
+  /**
    * Serialize.
    */
   String toJson() {
-    if (_allowAnyObject) {
+    if (_hasRawElements || !_configuration.canGuaranteeSerialization()) {
       throw 'Calling toString() on a PropertyList that allows arbitrary '
       'objects is not supported because we cannot gurantee that they will be '
-      'Serializable.';
+      'Serializable. If you want Serialization enabled, make sure you are '
+      'using the default configuration and not calling addRawElement()';
     }
 
     var buffer = new StringBuffer();
