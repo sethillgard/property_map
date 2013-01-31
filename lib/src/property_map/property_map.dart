@@ -64,8 +64,8 @@ class PropertyMap extends PropertyContainer implements Map<String, dynamic> {
   bool containsValue(dynamic value) => _objectData.containsValue(value);
   bool containsKey(String key) => _objectData.containsKey(key);
   forEach(func(String key, dynamic value)) => _objectData.forEach(func);
-  Collection<String> get keys => _objectData.keys;
-  Collection<dynamic> get values => _objectData.values;
+  Iterable<String> get keys => _objectData.keys;
+  Iterable<dynamic> get values => _objectData.values;
   int get length => _objectData.length;
   bool get isEmpty => _objectData.isEmpty;
   putIfAbsent(String key,ifAbsent()) {
