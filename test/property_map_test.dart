@@ -4,6 +4,17 @@ import 'package:unittest/unittest.dart';
 import 'package:unittest/html_enhanced_config.dart';
 import '../lib/property_map.dart';
 
+class Mock extends Serializable{
+    String messageField;
+
+    Mock(this.messageField) {
+    }
+
+    String toJson() {
+      return '{"_type_":"Test", "message":"${messageField}"}';
+    }
+}
+
 void main() {
 
   useHtmlEnhancedConfiguration();
@@ -14,6 +25,10 @@ void main() {
 
     setUp(() {
       data = new PropertyMap();
+
+      PropertyMap.registerCustomDeserializer('Mock', (value, config) {
+        return new Mock(value['message']);
+      });
     });
 
     test('Map base test', () {
@@ -70,6 +85,12 @@ void main() {
       expect(() => data.toJson(), throws);
     });
 
+    test('Custom deserializers', () {
+      data.mock = {'_type_': 'Mock', 'message':'secret message!'};
+      expect(data.mock, new isInstanceOf<Mock>());
+      expect(data.mock.messageField, equals('secret message!'));
+    });
+
     test('Serialization disabled when autoConvertMaps = false', () {
       var c = new PropertyContainerConfig();
       c.autoConvertMaps = false;
@@ -104,5 +125,44 @@ void main() {
       data.whatever = {'a': 'aaa', 'b': 'bbb'};
       expect(data.whatever, new isInstanceOf<Map>());
     });
+
+    test('Top level promotion of Maps', () {
+      var map = PropertyMap.promote({'aaa': 'Test', 'message':'secret'});
+      expect(map, new isInstanceOf<PropertyMap>());
+      expect(map.message, equals('secret'));
+    });
+
+    test('Top level promotion of Lists', () {
+      var list = PropertyMap.promote([0,1,2,3,'hey','you']);
+      expect(list, new isInstanceOf<PropertyList>());
+      expect(list[4], equals('hey'));
+    });
+
+    test('Top level promotion using custom deserializers', () {
+      var mock = PropertyMap.promote({'_type_': 'Mock',
+                                      'message':'secret message!'});
+      expect(mock, new isInstanceOf<Mock>());
+      expect(mock.messageField, equals('secret message!'));
+    });
+
+    test('PropertyMap -> Json string', () {
+      var map = PropertyMap.promote({'name': 'Test',
+                                     'message':'secret message!!!',
+                                     'nested':[1,2,3,4,'test',['a','b','c']]});
+      var json = map.toJson();
+      expect(json, equals('{"name":"Test","nested":[1,2,3,4,"test",'
+                          '["a","b","c"]]'
+                          ',"message":"secret message!!!"}'));
+    });
+
+    test('Json string -> PropertyMap', () {
+      var map = PropertyMap.parseJson('{"name":"Test","nested":[1,2,3,4,'
+                                      '"test",["a","b","c"]]'
+                                      ',"message":"secret message!!!"}');
+
+      expect(map.name, equals('Test'));
+      expect(map.nested[5][1], equals('b'));
+    });
+
   });
 }

@@ -22,5 +22,4 @@ part of property_map;
 
 abstract class Serializable {
   dynamic toJson();
-  void fromJson(dynamic json);
 }

@@ -1,5 +1,5 @@
 name: property_map
-version: 0.0.14
+version: 0.0.15
 author: Daniel Rodriguez <seth.illgard@gmail.com>
 description: "PropertyMap allows you to quickly implement property bags in dart. It\
   \ consists of 2 main classes: PropertyMap and PropertyList.\r\nPropertyMap is a\

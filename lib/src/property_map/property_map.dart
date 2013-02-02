@@ -34,6 +34,56 @@ class PropertyMap extends PropertyContainer implements Map<String, dynamic> {
   Map<String, dynamic> _objectData;
 
   /**
+   * Returns the passed value if it is a an acceptable entry for a
+   * PropertyContainer given the specified configuration, a 'promoted' version
+   * of the passed value (List->PropertyList, Map->PropertyMap), or a custom
+   * object constructed using the passed value if a custom deserializer was
+   * registred for its type.
+   *
+   * If the value is a Map or a List, it will be converted into a PropertyMap or
+   * a PropertyList (recursively), unless specified otherwise onto the config
+   * object.
+   *
+   * If the value is a Map with a '_type_' field, it will execute the registred
+   * customDeserializer for that type, unless specified otherwise in the config
+   * object.
+   *
+   * If the value is not a Map, List, String, bool, num, null, or an instance
+   * implementing Serializable and the config does not allow nonSerializable
+   * objects, it throws an exception.
+   */
+  static dynamic promote(dynamic value,
+                       [PropertyContainerConfig configuration = null]) {
+    if (configuration == null) {
+      configuration = PropertyContainerConfig.defaultValue;
+    }
+    return PropertyContainer._promote(value, configuration);
+  }
+
+  /**
+   * Parses a Json string and returns the object representation of it.
+   *
+   * Most likely it will return a PropertyMap, except if the top level map in
+   * the string has a "_type_" field, in which it will return the object
+   * returned by the custom deserializer registered for that type.
+   */
+  static dynamic parseJson(String json,
+                           [PropertyContainerConfig configuration = null]) {
+    if (configuration == null) {
+      configuration = PropertyContainerConfig.defaultValue;
+    }
+    return promote(JSON.parse(json), configuration);
+  }
+
+  /**
+   * Registers a new custom deserializer for a _type_
+   */
+  static void registerCustomDeserializer(String type,
+                                         Deserializer deserializer) {
+    PropertyContainer._registerCustomDeserializer(type, deserializer);
+  }
+
+  /**
    *  Default constructor.
    */
   PropertyMap([PropertyContainerConfig configuration = null]) {
@@ -46,8 +96,12 @@ class PropertyMap extends PropertyContainer implements Map<String, dynamic> {
 
   /**
    * Contructs a PropertyMap from another Map, creating a copy of it.
+   *
+   * Note: This constructor cannot use custom deserializers for the top level
+   * map. Use parse PropertyMap.parseMap() if you need a custom
+   * deserializer for the top level object.
    */
-  PropertyMap.from(Map<String, dynamic> other,
+  PropertyMap._from(Map<String, dynamic> other,
                    [PropertyContainerConfig configuration = null]) {
     if (configuration == null) {
       configuration = PropertyContainerConfig.defaultValue;
@@ -157,18 +211,6 @@ class PropertyMap extends PropertyContainer implements Map<String, dynamic> {
     }
     buffer.add('}');
     return buffer.toString();
-  }
-
-  /**
-   * Deserialize.
-   */
-  void fromJson(dynamic json) {
-    assert(json is Map);
-    _objectData = new Map.from(json);
-    for (var key in _objectData.keys) {
-      assert(key is String);
-      _objectData[key] = _validate(_objectData[key]);
-    }
   }
 
   dynamic toString() {

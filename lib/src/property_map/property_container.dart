@@ -20,6 +20,8 @@
 
 part of property_map;
 
+typedef dynamic Deserializer(Map map, PropertyContainerConfig config);
+
 /**
  * Base class for PropertyList and PropertyMap.
  * Implements common functionality.
@@ -28,21 +30,48 @@ abstract class PropertyContainer implements Serializable {
 
   // Configuration data object.
   PropertyContainerConfig _configuration = null;
+  PropertyContainerConfig get configuration => _configuration;
 
   // Internally used to mark that raw elements where added to the collection,
   // so we can no longer guarantee serialization.
   bool _hasRawElements = false;
 
+  // Map of registered custom deserializers. Keys are strings specifying the
+  // types (_type_) and keys are the deserializer functions.
+  static Map<String, Deserializer> _customDeserializers = {};
+
+  /**
+   * Registers a new custom deserializer for a _type_
+   */
+  static void _registerCustomDeserializer(String type,
+                                          Deserializer deserializer) {
+    _customDeserializers[type] = deserializer;
+  }
+
   /**
    * Returns the passed value if it is a an acceptable entry for a
-   * PropertyContainer. If the value is a Map or a List, it will be converted
-   * into a PropertyMap or a PropertyList (recursively), unless specified
-   * otherwise onto the config object. If the value is not a Map, List, String,
-   * bool, num, null, or an instance implementing Serializable and the config
-   * does not allow nonSerializable objects, it throws an exception.
+   * PropertyContainer given the specified configuration, a 'promoted' version
+   * of the passed value (List->PropertyList, Map->PropertyMap), or a custom
+   * object constructed using the passed value if a custom deserializer was
+   * registred for its type.
+   *
+   * If the value is a Map or a List, it will be converted into a PropertyMap or
+   * a PropertyList (recursively), unless specified otherwise onto the config
+   * object.
+   *
+   * If the value is a Map with a '_type_' field, it will execute the registred
+   * customDeserializer for that type, unless specified otherwise in the config
+   * object.
+   *
+   * If the value is not a Map, List, String, bool, num, null, or an instance
+   * implementing Serializable and the config does not allow nonSerializable
+   * objects, it throws an exception.
    */
-  static dynamic validate(dynamic value,
-                          PropertyContainerConfig configuration) {
+  static dynamic _promote(dynamic value,
+                          [PropertyContainerConfig configuration = null]) {
+    if (configuration == null) {
+      configuration = PropertyContainerConfig.defaultValue;
+    }
     if (value is num ||
         value is bool ||
         value is String ||
@@ -52,15 +81,44 @@ abstract class PropertyContainer implements Serializable {
     }
     else if (value is List) {
       if (configuration.autoConvertLists) {
-        return new PropertyList.from(value, configuration);
-      }
-      else {
+        return new PropertyList._from(value, configuration);
+      } else {
         return value;
       }
     }
     else if (value is Map) {
       if (configuration.autoConvertMaps) {
-        return new PropertyMap.from(value, configuration);
+
+        // If this map has a '_type_' key, check if we should use a custom
+        // deserializer.
+        if (configuration.useCustomDeserializers &&
+            value.keys.contains("_type_")) {
+          var type = value["_type_"];
+          if (_customDeserializers.keys.contains(type)) {
+            var deserializer = _customDeserializers[type];
+
+            // Why do we call validate on the result? Excellent question.
+            // The deserializer could return literally anything, including
+            // invalid types for the current configuration. Often, it will be
+            // a Serializable object, and validate() will return it
+            // immeadiately, but it could also return an invalid type, so we
+            // have to check it. We make sure the returned object is not the
+            // same value we sent to prevent infinite loops.
+            var result = deserializer(value, configuration);
+            if (result == value) {
+              throw 'Custom deserializer for type "$type" returned same object.'
+                  'This is not allowed. Custom deserializers must return a '
+                  'different object, generally an instance of a Serializable '
+                  'class.';
+            }
+            return _promote(result, configuration);
+          } else {
+            throw 'Custom deserializer not found for type "$type". Use '
+            'PropertyContainer.registerCustomDeserializer() to add it.';
+          }
+        } else {
+          return new PropertyMap._from(value, configuration);
+        }
       }
       else {
         return value;
@@ -85,34 +143,5 @@ abstract class PropertyContainer implements Serializable {
    * Internal non static version of validate(). Needed because classes that
    * extend this class may implement noSuchMethod.
    */
-  dynamic _validate(dynamic value) => validate(value, this._configuration);
-}
-
-/**
- * Configuration data holder.
- */
-class PropertyContainerConfig {
-
-  // If set to true, any object can be added to this container.
-  bool allowNonSerializables = false;
-
-  // If set to true, List objects will be turned into PropertyLists when added.
-  bool autoConvertLists = true;
-
-  // If set to true, Map objects will be turned into PropertyMaps when added.
-  bool autoConvertMaps = true;
-
-  /**
-   * Returns true if we can guarantee that all of the objects the containers
-   * using this configuration are holding are serializable.
-   *
-   * This is only true with the default configuration.
-   */
-  bool canGuaranteeSerialization() {
-    return !allowNonSerializables && autoConvertLists && autoConvertMaps;
-  }
-
-  // Cached default for everybody to use.
-  static final PropertyContainerConfig defaultValue =
-      new PropertyContainerConfig();
+  dynamic _validate(dynamic value) => _promote(value, this._configuration);
 }

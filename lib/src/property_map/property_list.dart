@@ -47,7 +47,7 @@ class PropertyList extends PropertyContainer implements List<dynamic> {
   /**
    * Contructs a PropertyList from any Iterable, creating a copy of it.
    */
-  PropertyList.from(Iterable other,
+  PropertyList._from(Iterable other,
                     [PropertyContainerConfig configuration = null]) {
     if (configuration == null) {
       configuration = PropertyContainerConfig.defaultValue;
@@ -126,6 +126,7 @@ class PropertyList extends PropertyContainer implements List<dynamic> {
   dynamic singleMatching(bool test(dynamic)) =>
       _objectData.singleMatching(test);
   dynamic elementAt(int index) => _objectData.elementAt(index);
+  List<dynamic> get reversed => _objectData.reversed;
 
   /**
    * Adds an element at the end of the PropertyList. It can be then
@@ -175,17 +176,6 @@ class PropertyList extends PropertyContainer implements List<dynamic> {
     }
     buffer.add(']');
     return buffer.toString();
-  }
-
-  /**
-   * Deserialize.
-   */
-  void fromJson(dynamic json) {
-    assert(json is List);
-    _objectData = new List.from(json);
-    for (var i = 0; i < _objectData.length; i++) {
-      _objectData[i] = _validate(_objectData[i]);
-    }
   }
 
   dynamic toString() {
