@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Property map by sethillgard</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Property map</h1>
+        <h2>Property Map for dart</h2>
+        <a href="https://github.com/sethillgard/property_map" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>property_map</h1>
+
+<h2>Introduction</h2>
+
+<p>PropertyMap allows you to quickly implement property bags in dart. It consists
+of 2 main classes: PropertyMap and PropertyList.</p>
+
+<p>PropertyMap is a wrapper around Map.
+PropertyList is a wrapper around List.</p>
+
+<p>By default, they can only take simple objects (as defined in dart:json)
+and Serializable objects. The configuration object passed to the constructor
+allows you to modify this behavior if needed.</p>
+
+<h2>Features</h2>
+
+<ul>
+<li>Rapid implementation of property bags.</li>
+<li>Can restrict contents to simple types (as defined in dart:json) and
+Serializable objects. This is the default.</li>
+</ul><h2>Getting Started</h2>
+
+<p>1. Add the following to your project's <strong>pubspec.yaml</strong> and run
+<code>pub install</code>.</p>
+
+<div class="highlight"><pre><span class="l-Scalar-Plain">dependencies</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">property_map</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">git</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">https://github.com/sethillgard/property_map.git</span>
+</pre></div>
+
+<p>2. Add the correct import for your project.</p>
+
+<div class="highlight"><pre><span class="n">import</span> <span class="s1">'package:property_map/property_map.dart'</span><span class="p">;</span>
+</pre></div>
+
+<h2>Example</h2>
+
+<p>1. Initialize an AssetManager:</p>
+
+<div class="highlight"><pre><span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// Create a PropertyMap</span>
+  <span class="kd">var</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PropertyMap</span><span class="p">();</span>
+
+  <span class="c1">// Just add properties.</span>
+  <span class="n">data</span><span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"Daniel"</span><span class="p">;</span>
+  <span class="n">data</span><span class="p">.</span><span class="n">age</span> <span class="o">=</span> <span class="m">25</span><span class="p">;</span>
+
+  <span class="c1">// [] works too, if you prefer it.</span>
+  <span class="n">data</span><span class="p">[</span><span class="s1">'phone'</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"621-222-1155"</span><span class="p">;</span>
+
+  <span class="c1">// Add a List. It will be automatically converted to a PropertyList </span>
+  <span class="c1">// (recursively).</span>
+  <span class="n">data</span><span class="p">.</span><span class="n">enemies</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Lucia'</span><span class="p">,</span> <span class="s1">'John'</span><span class="p">,</span> <span class="s1">'Alex'</span><span class="p">];</span>
+
+  <span class="c1">// But exposes the same API.</span>
+  <span class="n">data</span><span class="p">.</span><span class="n">enemies</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s1">'Susan'</span><span class="p">);</span>
+
+  <span class="c1">// Maps are converted to PropertyMaps (also recursively).</span>
+  <span class="n">data</span><span class="p">.</span><span class="n">games</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'important'</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="s1">'fun'</span><span class="o">:</span><span class="kc">true</span><span class="p">,</span> <span class="s1">'numberOwned'</span><span class="o">:</span><span class="m">9999</span><span class="p">};</span>
+
+  <span class="c1">// You can simply keep adding properties to nested maps.</span>
+  <span class="n">data</span><span class="p">.</span><span class="n">games</span><span class="p">.</span><span class="n">favorites</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Braid'</span><span class="p">,</span> <span class="s1">'Portal'</span><span class="p">];</span>
+
+  <span class="c1">// Add nested maps and lists. Values get validated and converted automatically.</span>
+  <span class="n">data</span><span class="p">.</span><span class="n">test</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'a'</span><span class="o">:</span><span class="p">{</span><span class="s1">'b'</span><span class="o">:</span><span class="p">[</span><span class="m">0</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">]}};</span>
+
+  <span class="c1">// Read values.</span>
+  <span class="n">print</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">name</span><span class="p">);</span>                 <span class="c1">// Daniel</span>
+  <span class="n">print</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">games</span><span class="p">.</span><span class="n">favorites</span><span class="p">[</span><span class="m">0</span><span class="p">]);</span>   <span class="c1">// Braid</span>
+  <span class="n">print</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">test</span><span class="p">.</span><span class="n">a</span><span class="p">.</span><span class="n">b</span><span class="p">[</span><span class="m">1</span><span class="p">]);</span>          <span class="c1">// 1</span>
+
+  <span class="c1">// Serialize them all.</span>
+  <span class="n">print</span><span class="p">(</span><span class="n">data</span><span class="p">.</span><span class="n">toJson</span><span class="p">());</span>
+<span class="p">}</span>
+</pre></div>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/sethillgard/property_map/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/sethillgard/property_map/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/sethillgard/property_map"></a> is maintained by <a href="https://github.com/sethillgard">sethillgard</a>.</p>
+
+          <p>This page was generated by <a href="pages.github.com">GitHub Pages</a> using the Architect theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
