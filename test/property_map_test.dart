@@ -70,7 +70,7 @@ void main() {
     });
 
     test('Arbitrary data types when allowNonSerializables = true', () {
-      var c = new PropertyContainerConfig();
+      var c = new PropertyMapConfig();
       c.allowNonSerializables = true;
       var data = new PropertyMap(c);
       data.unsupportedType = new StringBuffer();
@@ -78,7 +78,7 @@ void main() {
     });
 
     test('Serialization disabled when autoConvertLists = false', () {
-      var c = new PropertyContainerConfig();
+      var c = new PropertyMapConfig();
       c.autoConvertLists = false;
       var data = new PropertyMap(c);
       data.whatever = 4;
@@ -92,7 +92,7 @@ void main() {
     });
 
     test('Serialization disabled when autoConvertMaps = false', () {
-      var c = new PropertyContainerConfig();
+      var c = new PropertyMapConfig();
       c.autoConvertMaps = false;
       var data = new PropertyMap(c);
       data.whatever = 4;
@@ -111,7 +111,7 @@ void main() {
     });
 
     test('Lists not being promoted when autoConvertLists = false', () {
-      var c = new PropertyContainerConfig();
+      var c = new PropertyMapConfig();
       c.autoConvertLists = false;
       var data = new PropertyMap(c);
       data.whatever = [1,2,4,5];
@@ -119,7 +119,7 @@ void main() {
     });
 
     test('Maps not being promoted when autoConvertMaps = false', () {
-      var c = new PropertyContainerConfig();
+      var c = new PropertyMapConfig();
       c.autoConvertMaps = false;
       var data = new PropertyMap(c);
       data.whatever = {'a': 'aaa', 'b': 'bbb'};

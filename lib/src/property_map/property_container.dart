@@ -20,7 +20,7 @@
 
 part of property_map;
 
-typedef dynamic Deserializer(Map map, PropertyContainerConfig config);
+typedef dynamic Deserializer(Map map, PropertyMapConfig config);
 
 /**
  * Base class for PropertyList and PropertyMap.
@@ -29,8 +29,8 @@ typedef dynamic Deserializer(Map map, PropertyContainerConfig config);
 abstract class PropertyContainer implements Serializable {
 
   // Configuration data object.
-  PropertyContainerConfig _configuration = null;
-  PropertyContainerConfig get configuration => _configuration;
+  PropertyMapConfig _configuration = null;
+  PropertyMapConfig get configuration => _configuration;
 
   // Internally used to mark that raw elements where added to the collection,
   // so we can no longer guarantee serialization.
@@ -68,9 +68,9 @@ abstract class PropertyContainer implements Serializable {
    * objects, it throws an exception.
    */
   static dynamic _promote(dynamic value,
-                          [PropertyContainerConfig configuration = null]) {
+                          [PropertyMapConfig configuration = null]) {
     if (configuration == null) {
-      configuration = PropertyContainerConfig.defaultValue;
+      configuration = PropertyMapConfig.defaultValue;
     }
     if (value is num ||
         value is bool ||

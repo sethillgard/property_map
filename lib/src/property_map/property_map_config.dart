@@ -22,7 +22,7 @@ part of property_map;
 /**
  * Configuration data holder for PropertyContainers.
  */
-class PropertyContainerConfig {
+class PropertyMapConfig {
 
   // If set to true, any object can be added to this container.
   bool allowNonSerializables = false;
@@ -49,7 +49,6 @@ class PropertyContainerConfig {
   }
 
   // Cached default for everybody to use.
-  static final PropertyContainerConfig defaultValue =
-      new PropertyContainerConfig();
+  static final PropertyMapConfig defaultValue = new PropertyMapConfig();
 }
 

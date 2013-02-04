@@ -36,9 +36,9 @@ class PropertyList extends PropertyContainer implements List<dynamic> {
   /**
    *  Default constructor.
    */
-  PropertyList([PropertyContainerConfig configuration = null]) {
+  PropertyList([PropertyMapConfig configuration = null]) {
     if (configuration == null) {
-      configuration = PropertyContainerConfig.defaultValue;
+      configuration = PropertyMapConfig.defaultValue;
     }
     _configuration = configuration;
     _objectData = new List();
@@ -47,10 +47,9 @@ class PropertyList extends PropertyContainer implements List<dynamic> {
   /**
    * Contructs a PropertyList from any Iterable, creating a copy of it.
    */
-  PropertyList._from(Iterable other,
-                    [PropertyContainerConfig configuration = null]) {
+  PropertyList._from(Iterable other, [PropertyMapConfig configuration = null]) {
     if (configuration == null) {
-      configuration = PropertyContainerConfig.defaultValue;
+      configuration = PropertyMapConfig.defaultValue;
     }
     _configuration = configuration;
     _objectData = new List.from(other);

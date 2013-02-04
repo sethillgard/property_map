@@ -53,9 +53,9 @@ class PropertyMap extends PropertyContainer implements Map<String, dynamic> {
    * objects, it throws an exception.
    */
   static dynamic promote(dynamic value,
-                       [PropertyContainerConfig configuration = null]) {
+                       [PropertyMapConfig configuration = null]) {
     if (configuration == null) {
-      configuration = PropertyContainerConfig.defaultValue;
+      configuration = PropertyMapConfig.defaultValue;
     }
     return PropertyContainer._promote(value, configuration);
   }
@@ -68,9 +68,9 @@ class PropertyMap extends PropertyContainer implements Map<String, dynamic> {
    * returned by the custom deserializer registered for that type.
    */
   static dynamic parseJson(String json,
-                           [PropertyContainerConfig configuration = null]) {
+                           [PropertyMapConfig configuration = null]) {
     if (configuration == null) {
-      configuration = PropertyContainerConfig.defaultValue;
+      configuration = PropertyMapConfig.defaultValue;
     }
     return promote(JSON.parse(json), configuration);
   }
@@ -86,9 +86,9 @@ class PropertyMap extends PropertyContainer implements Map<String, dynamic> {
   /**
    *  Default constructor.
    */
-  PropertyMap([PropertyContainerConfig configuration = null]) {
+  PropertyMap([PropertyMapConfig configuration = null]) {
     if (configuration == null) {
-      configuration = PropertyContainerConfig.defaultValue;
+      configuration = PropertyMapConfig.defaultValue;
     }
     _configuration = configuration;
     _objectData = new Map();
@@ -98,13 +98,13 @@ class PropertyMap extends PropertyContainer implements Map<String, dynamic> {
    * Contructs a PropertyMap from another Map, creating a copy of it.
    *
    * Note: This constructor cannot use custom deserializers for the top level
-   * map. Use parse PropertyMap.parseMap() if you need a custom
-   * deserializer for the top level object.
+   * map. Use parse PropertyMap.promote() if you need a custom deserializer for
+   * the top level object.
    */
   PropertyMap._from(Map<String, dynamic> other,
-                   [PropertyContainerConfig configuration = null]) {
+                    [PropertyMapConfig configuration = null]) {
     if (configuration == null) {
-      configuration = PropertyContainerConfig.defaultValue;
+      configuration = PropertyMapConfig.defaultValue;
     }
     _configuration = configuration;
     _objectData = new Map.from(other);

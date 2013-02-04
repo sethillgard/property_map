@@ -22,7 +22,7 @@ library property_map;
 import 'dart:mirrors';
 import 'dart:json' as JSON;
 
-part 'src/property_map/property_container_config.dart';
+part 'src/property_map/property_map_config.dart';
 part 'src/property_map/property_container.dart';
 part 'src/property_map/property_list.dart';
 part 'src/property_map/property_map.dart';
