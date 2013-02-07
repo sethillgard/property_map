@@ -105,6 +105,7 @@ class PropertyList extends PropertyContainer implements List<dynamic> {
   Iterator<dynamic> get iterator => _objectData.iterator;
   dynamic get single => _objectData.single;
   Iterable<dynamic> mappedBy(dynamic f(dynamic)) => _objectData.mappedBy(f);
+  Iterable<dynamic> map(dynamic f(dynamic)) => _objectData.mappedBy(f);
   Iterable<dynamic> where(bool f(dynamic)) => _objectData.where(f);
   String join([String separator]) => _objectData.join(separator);
   bool any(bool f(dynamic)) => _objectData.any(f);
@@ -126,6 +127,7 @@ class PropertyList extends PropertyContainer implements List<dynamic> {
       _objectData.singleMatching(test);
   dynamic elementAt(int index) => _objectData.elementAt(index);
   List<dynamic> get reversed => _objectData.reversed;
+
 
   /**
    * Adds an element at the end of the PropertyList. It can be then
